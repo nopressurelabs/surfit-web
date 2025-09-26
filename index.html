@@ -6,18 +6,19 @@
     <title>SurfIt — Find Better Days To Surf</title>
     <meta name="description" content="SurfIt helps you pick the best surf days using swell, weather, and tides." />
     <style>
-      :root { --bg:#0b1220; --fg:#e9eef7; --muted:#9fb0c9; --accent:#41b6e6; }
+      /* App palette: white, gray, green (systemGreen) */
+      :root { --bg:#ffffff; --fg:#111827; --muted:#6b7280; --accent:#34c759; --card:#f8fafc; --border:#e5e7eb; }
       html,body { height:100%; margin:0; font:16px/1.5 -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--fg); }
       .wrap { max-width:860px; margin:0 auto; padding:48px 20px; }
-      header h1 { margin:0 0 8px; font-size:32px; }
+      header h1 { margin:0 0 8px; font-size:32px; color:var(--fg); }
       header p { margin:0; color:var(--muted); }
       .cta { margin:28px 0 40px; display:flex; gap:12px; flex-wrap:wrap; }
-      .btn { display:inline-block; padding:10px 14px; border-radius:8px; text-decoration:none; color:#081018; background:var(--accent); font-weight:600; }
-      .btn.secondary { background:transparent; color:var(--fg); border:1px solid #2a3a58; }
+      .btn { display:inline-block; padding:10px 14px; border-radius:8px; text-decoration:none; color:#0b1220; background:var(--accent); font-weight:600; border:1px solid var(--accent); }
+      .btn.secondary { background:transparent; color:var(--fg); border:1px solid var(--border); }
       .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:16px; }
-      .card { background:#111a2b; border:1px solid #1a2741; border-radius:12px; padding:16px; }
+      .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; }
       footer { margin-top:48px; color:var(--muted); font-size:14px; }
-      a { color:#9fd6ff; }
+      a { color:var(--accent); }
     </style>
   </head>
   <body>
@@ -51,4 +52,3 @@
     </script>
   </body>
   </html>
-
