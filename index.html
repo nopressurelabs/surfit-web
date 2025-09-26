@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SurfIt — Find Better Days To Surf</title>
+    <meta name="description" content="SurfIt helps you pick the best surf days using swell, weather, and tides." />
+    <style>
+      :root { --bg:#0b1220; --fg:#e9eef7; --muted:#9fb0c9; --accent:#41b6e6; }
+      html,body { height:100%; margin:0; font:16px/1.5 -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--fg); }
+      .wrap { max-width:860px; margin:0 auto; padding:48px 20px; }
+      header h1 { margin:0 0 8px; font-size:32px; }
+      header p { margin:0; color:var(--muted); }
+      .cta { margin:28px 0 40px; display:flex; gap:12px; flex-wrap:wrap; }
+      .btn { display:inline-block; padding:10px 14px; border-radius:8px; text-decoration:none; color:#081018; background:var(--accent); font-weight:600; }
+      .btn.secondary { background:transparent; color:var(--fg); border:1px solid #2a3a58; }
+      .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:16px; }
+      .card { background:#111a2b; border:1px solid #1a2741; border-radius:12px; padding:16px; }
+      footer { margin-top:48px; color:var(--muted); font-size:14px; }
+      a { color:#9fd6ff; }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header>
+        <h1>SurfIt</h1>
+        <p>Pick the best surf days from swell, weather, and tides — fast.</p>
+        <div class="cta">
+          <a class="btn" href="#" aria-label="App Store link">Download on the App Store</a>
+          <a class="btn secondary" href="privacy.html">Privacy Policy</a>
+        </div>
+      </header>
+
+      <section class="grid">
+        <div class="card">
+          <h3>Data Sources</h3>
+          <p>Marine and weather data via Open‑Meteo. Map tiles by MapTiler &amp; © OpenStreetMap contributors.</p>
+        </div>
+        <div class="card">
+          <h3>Contact</h3>
+          <p>Questions or feedback? <a href="mailto:hello@sifr.tech">hello@sifr.tech</a></p>
+        </div>
+      </section>
+
+      <footer>
+        <p>© <span id="year"></span> SurfIt. All rights reserved.</p>
+      </footer>
+    </main>
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+  </html>
+
