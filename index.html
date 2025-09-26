@@ -8,15 +8,25 @@
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <style>
-      /* Palette adapted to logo image (neutral base + brand accent from image) */
-      :root { --bg:#ffffff; --fg:#111827; --muted:#6b7280; --accent:#0a8f6a; --card:#f6fbf9; --border:#e5e7eb; }
+      /* Brand palette (provided) */
+      :root {
+        --bg:#F7FAFC;      /* Soft White */
+        --fg:#1A1C2C;      /* Midnight Navy */
+        --muted:#6b7280;   /* System neutral for body copy */
+        --accent:#00A6A6;  /* Surf Teal */
+        --accent2:#66E0FF; /* Sky Blue */
+        --card:#DCE3E9;    /* Cool Grey */
+        --border:#DCE3E9;
+        --grad-start:#005D8F; /* Ocean Blue */
+        --grad-end:#00D2FF;   /* Aqua Cyan */
+      }
       html,body { height:100%; margin:0; font:16px/1.5 -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--fg); }
       .wrap { max-width:860px; margin:0 auto; padding:48px 20px; }
       header h1 { margin:0 0 8px; font-size:32px; color:var(--fg); }
       header p { margin:0; color:var(--muted); }
       .cta { margin:28px 0 40px; display:flex; gap:12px; flex-wrap:wrap; }
-      .btn { display:inline-block; padding:10px 14px; border-radius:8px; text-decoration:none; color:#0b1220; background:var(--accent); font-weight:600; border:1px solid var(--accent); }
-      .btn.secondary { background:transparent; color:var(--fg); border:1px solid var(--border); }
+      .btn { display:inline-block; padding:10px 14px; border-radius:8px; text-decoration:none; color:#081018; background:linear-gradient(135deg, var(--grad-start), var(--grad-end)); font-weight:600; border:0; }
+      .btn.secondary { background:transparent; color:var(--fg); border:1px solid var(--accent); }
       .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:16px; }
       .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; }
       footer { margin-top:48px; color:var(--muted); font-size:14px; }
