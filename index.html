@@ -30,7 +30,9 @@
       .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:16px; }
       .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; }
       footer { margin-top:48px; color:var(--muted); font-size:14px; }
-      a { color:var(--accent); }
+      a, a:visited { color:var(--accent); }
+      a:hover { color:var(--accent2); text-decoration: underline; }
+      a:active { color:var(--grad-start); }
       p, li { color:#4A4A4A; }
       h2, h3 { color:#005D8F; }
     </style>
