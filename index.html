@@ -21,23 +21,23 @@
         --grad-end:#00D2FF;   /* Aqua Cyan */
       }
       html,body { height:100%; margin:0; font:16px/1.5 -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--fg); }
-      .wrap { max-width:860px; margin:0 auto; padding:48px 20px; }
+      .wrap { max-width:860px; margin:0 auto; padding:0 20px 48px; }
       header {
         position:relative;
         margin:0 0 56px;
-        padding:96px 24px 140px;
+        padding:112px 24px 140px;
         overflow:visible;
         color:#F7FAFC;
       }
       header::before {
         content:"";
         position:absolute;
-        top:-160px;
+        top:0;
         left:50%;
         transform:translateX(-50%);
         width:120vw;
-        height:calc(100% + 240px);
-        background:linear-gradient(140deg, var(--grad-start) 0%, var(--accent) 40%, var(--accent2) 100%);
+        height:calc(100% + 200px);
+        background:linear-gradient(152deg, rgba(0, 166, 166, 0.98) 0%, rgba(0, 184, 206, 0.95) 45%, rgba(0, 210, 255, 0.92) 72%, rgba(102, 224, 255, 0.95) 100%);
         border-bottom-left-radius:55% 18%;
         border-bottom-right-radius:55% 24%;
         box-shadow:0 40px 120px rgba(0, 93, 143, 0.35);
@@ -64,10 +64,10 @@
       header .card { margin-top:24px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.28); backdrop-filter:blur(6px); color:#F7FAFC; }
       header .card p { color:inherit; }
       .cta { margin:28px 0 40px; display:flex; gap:12px; flex-wrap:wrap; }
-      .btn { display:inline-block; padding:10px 14px; border-radius:8px; text-decoration:none; color:#081018; background:linear-gradient(135deg, var(--grad-end), var(--grad-start)); font-weight:600; border:0; }
+      .btn { display:inline-block; padding:10px 14px; border-radius:8px; text-decoration:none; color:#04303a; background:linear-gradient(135deg, var(--accent2), var(--accent)); font-weight:600; border:0; }
       .btn.secondary { background:transparent; color:var(--fg); border:1px solid var(--accent); }
-      header .btn { box-shadow:0 10px 24px rgba(0, 41, 63, 0.35); }
-      header .btn.secondary { color:#F7FAFC; border-color:rgba(255,255,255,0.6); backdrop-filter:blur(2px); }
+      header .btn { box-shadow:0 12px 28px rgba(0, 71, 92, 0.3); }
+      header .btn.secondary { color:#F7FAFC; border-color:rgba(255,255,255,0.68); backdrop-filter:blur(4px); }
       .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:16px; }
       .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; }
       footer { margin-top:48px; color:var(--muted); font-size:14px; }
