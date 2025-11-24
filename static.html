@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SurfIt — Surf Forecasting Rebuilt in Static HTML</title>
+    <meta name="description" content="SurfIt blends swell, wind, and tide data into one fast, privacy-first surf companion." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              background: '#F7FAFC',
+              foreground: '#1A1C2C',
+              card: '#DCE3E9',
+              border: '#DCE3E9',
+              primary: '#00A6A6',
+              'primary-foreground': '#F7FAFC',
+              secondary: '#66E0FF',
+              'secondary-foreground': '#0F172A',
+              accent: '#00D2FF',
+              muted: '#E2E8F0',
+              'muted-foreground': '#4B5563'
+            },
+            fontFamily: {
+              heading: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'system-ui', 'sans-serif'],
+              body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'system-ui', 'sans-serif'],
+            },
+            boxShadow: {
+              ocean: '0 15px 35px rgba(15, 118, 110, 0.25)'
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        --wave-duration: 8s;
+        --wave-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        --float-duration: 4s;
+      }
+
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        background-color: #F7FAFC;
+        color: #1A1C2C;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      @keyframes ocean-wave {
+        0% {
+          transform: translateX(-100%) scaleY(1);
+        }
+        25% {
+          transform: translateX(-25%) scaleY(1.1);
+        }
+        50% {
+          transform: translateX(0) scaleY(1);
+        }
+        75% {
+          transform: translateX(25%) scaleY(0.9);
+        }
+        100% {
+          transform: translateX(100%) scaleY(1);
+        }
+      }
+
+      @keyframes wave-flow {
+        0%,
+        100% {
+          transform: translateX(-50%) rotate(0deg);
+          opacity: 0.7;
+        }
+        50% {
+          transform: translateX(50%) rotate(180deg);
+          opacity: 1;
+        }
+      }
+
+      @keyframes surf-float {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg);
+        }
+        25% {
+          transform: translateY(-8px) rotate(1deg);
+        }
+        75% {
+          transform: translateY(-4px) rotate(-1deg);
+        }
+      }
+
+      @keyframes tide-in {
+        from {
+          opacity: 0;
+          transform: translateY(40px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes swell-rise {
+        0% {
+          transform: translateY(20px) scale(0.8);
+          opacity: 0;
+        }
+        60% {
+          transform: translateY(-5px) scale(1.02);
+          opacity: 0.8;
+        }
+        100% {
+          transform: translateY(0) scale(1);
+          opacity: 1;
+        }
+      }
+
+      .ocean-wave {
+        animation: ocean-wave var(--wave-duration) var(--wave-ease) infinite;
+      }
+
+      .wave-flow {
+        animation: wave-flow calc(var(--wave-duration) * 1.5) var(--wave-ease) infinite;
+      }
+
+      .surf-float {
+        animation: surf-float var(--float-duration) ease-in-out infinite;
+      }
+
+      .tide-in {
+        animation: tide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .swell-rise {
+        animation: swell-rise 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .nav-blur {
+        backdrop-filter: blur(18px);
+      }
+
+      .glass-card {
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.8);
+      }
+
+      .hero-overlay::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(3, 7, 18, 0.85), rgba(15, 118, 110, 0.5));
+      }
+
+      .hero-overlay img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        filter: brightness(0.85);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-background text-foreground antialiased">
+    <!-- Navigation -->
+    <nav class="fixed top-0 inset-x-0 z-50 border-b border-white/40 bg-background/80 nav-blur">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="flex h-16 items-center justify-between">
+          <a href="#" class="flex items-center space-x-3">
+            <img src="../src/assets/surfit-app-logo.png" alt="SurfIt App Logo" class="h-9 w-9 rounded-xl shadow" />
+            <span class="text-2xl font-heading font-semibold">SurfIt</span>
+          </a>
+
+          <div class="hidden md:flex items-center space-x-8 text-sm font-medium">
+            <a href="#features" class="hover:text-primary transition">Features</a>
+            <a href="#pricing" class="hover:text-primary transition">Price</a>
+            <a href="#support" class="hover:text-primary transition">Support</a>
+            <a href="privacy.html" class="hover:text-primary transition">Policy</a>
+          </div>
+
+          <div class="hidden md:flex items-center space-x-3">
+            <a
+              href="https://github.com"
+              class="inline-flex items-center rounded-full border border-border/80 px-4 py-2 text-sm font-medium text-foreground hover:bg-white"
+            >
+              <i data-lucide="github" class="mr-2 h-4 w-4 text-accent"></i>
+              GitHub
+            </a>
+            <a
+              href="#download"
+              class="inline-flex items-center rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground shadow-ocean transition hover:bg-primary/90"
+            >
+              <i data-lucide="download" class="mr-2 h-4 w-4 text-accent"></i>
+              Download
+            </a>
+          </div>
+
+          <button id="mobile-menu-toggle" class="md:hidden inline-flex items-center justify-center rounded-lg border border-border/70 p-2">
+            <i id="menu-icon" data-lucide="menu" class="h-5 w-5 text-accent"></i>
+            <i id="close-icon" data-lucide="x" class="hidden h-5 w-5 text-accent"></i>
+          </button>
+        </div>
+
+        <div id="mobile-menu" class="hidden flex-col space-y-4 border-t border-border/70 py-4 md:hidden">
+          <a href="#features" class="font-medium hover:text-primary">Features</a>
+          <a href="#pricing" class="font-medium hover:text-primary">Price</a>
+          <a href="#support" class="font-medium hover:text-primary">Support</a>
+          <a href="privacy.html" class="font-medium hover:text-primary">Policy</a>
+          <a href="https://github.com" class="inline-flex items-center rounded-full border border-border/80 px-4 py-2 text-sm font-medium text-foreground hover:bg-white">
+            <i data-lucide="github" class="mr-2 h-4 w-4 text-accent"></i>
+            GitHub
+          </a>
+          <a href="#download" class="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground shadow-ocean transition hover:bg-primary/90">
+            <i data-lucide="download" class="mr-2 h-4 w-4 text-accent"></i>
+            Download App
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="relative flex min-h-screen items-center justify-center overflow-hidden pt-24">
+      <div class="hero-overlay absolute inset-0">
+        <img src="../src/assets/hero-surfing-wave.jpg" alt="Surfer riding a wave" />
+      </div>
+      <div class="absolute inset-0 overflow-hidden">
+        <div class="ocean-wave absolute bottom-0 left-0 h-32 w-[130%] bg-gradient-to-t from-primary/30 to-transparent"></div>
+        <div class="wave-flow absolute bottom-0 left-0 h-24 w-[130%] bg-gradient-to-t from-secondary/20 to-transparent"></div>
+      </div>
+      <div class="relative z-10 max-w-5xl px-4 sm:px-6 text-center text-white">
+        <div class="tide-in">
+          <div class="mb-8 flex flex-col items-center justify-center space-y-4 sm:flex-row sm:space-y-0 sm:space-x-5">
+            <img src="../src/assets/surfit-app-logo.png" alt="SurfIt badge" class="surf-float h-20 w-20 rounded-2xl shadow-2xl" />
+            <h1 class="text-4xl font-heading font-bold tracking-tight sm:text-6xl lg:text-7xl">SurfIt</h1>
+          </div>
+          <p class="mx-auto mb-10 max-w-3xl text-base text-white/90 sm:text-xl">
+            One map, all the surf: <span class="text-secondary font-semibold">swell</span>, <span class="text-secondary font-semibold">wind</span>, and <span class="text-secondary font-semibold">tide</span>—find the best spot and the best conditions for better surfing sessions. Fast, private, and hassle-free.
+          </p>
+          <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <a href="#download" class="block transition hover:scale-105">
+              <img src="../src/assets/app-store-badge.svg" alt="Download on the App Store" class="h-14 w-auto" />
+            </a>
+            <a href="#features" class="inline-flex min-w-[200px] items-center justify-center rounded-full border border-white/40 bg-white/10 px-6 py-3 text-base font-semibold text-white backdrop-blur hover:bg-white/20">
+              <i data-lucide="smartphone" class="mr-3 h-5 w-5 text-accent"></i>
+              View Demo
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="absolute bottom-10 left-1/2 -translate-x-1/2">
+        <div class="flex h-12 w-7 items-start justify-center rounded-full border-2 border-white/40 p-1">
+          <div class="h-3 w-1 animate-bounce rounded-full bg-white"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Highlights -->
+    <section class="bg-background py-12 sm:py-16">
+      <div class="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 sm:px-6 md:grid-cols-2 lg:grid-cols-4">
+        <article class="rounded-2xl border border-border bg-card/60 p-6 text-center shadow-sm">
+          <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white text-primary">
+            <i data-lucide="map-pin" class="h-6 w-6 text-accent"></i>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold">Interactive Spot Map</h3>
+          <p class="text-sm text-muted-foreground">Discover surf spots with parking, cafes, and surf schools nearby.</p>
+        </article>
+        <article class="rounded-2xl border border-border bg-card/60 p-6 text-center shadow-sm">
+          <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white text-primary">
+            <i data-lucide="smartphone" class="h-6 w-6 text-accent"></i>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold">Privacy-First Design</h3>
+          <p class="text-sm text-muted-foreground">No accounts needed, your data stays private.</p>
+        </article>
+        <article class="rounded-2xl border border-border bg-card/60 p-6 text-center shadow-sm">
+          <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white text-primary">
+            <img src="../src/assets/ai-icon.png" alt="Smart Picks" class="h-6 w-6" />
+          </div>
+          <h3 class="mb-2 text-lg font-semibold">Smart Picks</h3>
+          <p class="text-sm text-muted-foreground">AI analyses historical & forecast data to recommend the perfect surf days.</p>
+        </article>
+        <article class="rounded-2xl border border-border bg-card/60 p-6 text-center shadow-sm">
+          <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white text-primary">
+            <i data-lucide="calendar" class="h-6 w-6 text-accent"></i>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold">Extended Forecasts</h3>
+          <p class="text-sm text-muted-foreground">Detailed 14-day forecasts with hourly breakdowns and confidence ratings.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Core + Smart Features -->
+    <section id="features" class="bg-background py-16 sm:py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6">
+        <div class="swell-rise mb-14 text-center">
+          <h2 class="mb-4 text-4xl font-heading font-bold">Why Choose SurfIt</h2>
+          <p class="mx-auto max-w-3xl text-lg text-muted-foreground">
+            SurfIt combines the essential surf data you need into one simple, fast, and privacy-friendly app.
+          </p>
+        </div>
+
+        <div class="mb-20">
+          <div class="mb-10 text-center">
+            <span class="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-accent">Core Data</span>
+            <h3 class="mt-4 text-2xl font-semibold">All the data you need, beautifully combined</h3>
+          </div>
+          <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div class="flex flex-col items-center space-y-4">
+              <div class="relative h-full w-full overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-8 text-center shadow-lg">
+                <div class="absolute inset-0" style="background-image: url('../src/assets/swell-analysis-bg.jpg'); background-size: cover; background-position: center; opacity: 0.3;"></div>
+                <div class="relative">
+                  <div class="mx-auto mb-4 w-fit rounded-full bg-white/80 p-4">
+                    <i data-lucide="waves" class="h-8 w-8 text-accent"></i>
+                  </div>
+                  <h4 class="text-xl font-semibold">Swell Analysis</h4>
+                  <p class="mt-3 text-sm text-muted-foreground">Real-time swell height, period, and direction data from multiple marine sources.</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap justify-center gap-2 text-xs">
+                <span class="rounded-full bg-muted px-3 py-1">Real-time</span>
+                <span class="rounded-full bg-muted px-3 py-1">Multiple Sources</span>
+              </div>
+            </div>
+            <div class="flex flex-col items-center space-y-4">
+              <div class="relative h-full w-full overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-8 text-center shadow-lg">
+                <div class="absolute inset-0" style="background-image: url('../src/assets/wind-sky-bg.jpg'); background-size: cover; background-position: center; opacity: 0.3;"></div>
+                <div class="relative">
+                  <div class="mx-auto mb-4 w-fit rounded-full bg-white/80 p-4">
+                    <i data-lucide="wind" class="h-8 w-8 text-accent"></i>
+                  </div>
+                  <h4 class="text-xl font-semibold">Wind Conditions</h4>
+                  <p class="mt-3 text-sm text-muted-foreground">Precise wind speed and direction forecasts optimized for surf conditions.</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap justify-center gap-2 text-xs">
+                <span class="rounded-full bg-muted px-3 py-1">Forecasts</span>
+                <span class="rounded-full bg-muted px-3 py-1">Surf Optimized</span>
+              </div>
+            </div>
+            <div class="flex flex-col items-center space-y-4">
+              <div class="relative h-full w-full overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-8 text-center shadow-lg">
+                <div class="absolute inset-0" style="background-image: url('../src/assets/tide-charts-bg.jpg'); background-size: cover; background-position: center; opacity: 0.3;"></div>
+                <div class="relative">
+                  <div class="mx-auto mb-4 w-fit rounded-full bg-white/80 p-4">
+                    <i data-lucide="clock-3" class="h-8 w-8 text-accent"></i>
+                  </div>
+                  <h4 class="text-xl font-semibold">Tide Charts</h4>
+                  <p class="mt-3 text-sm text-muted-foreground">Accurate tide predictions showing the best times to paddle out.</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap justify-center gap-2 text-xs">
+                <span class="rounded-full bg-muted px-3 py-1">Predictions</span>
+                <span class="rounded-full bg-muted px-3 py-1">Timing</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="mb-10 text-center">
+            <span class="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-accent">Smart Features</span>
+            <h3 class="mt-4 text-2xl font-semibold">Built for the modern surfer</h3>
+          </div>
+          <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <article class="relative overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-6 text-center shadow-lg">
+              <div class="absolute inset-0" style="background-image: url('../src/assets/spot-map-bg.jpg'); background-size: cover; background-position: center; opacity: 0.25;"></div>
+              <div class="relative">
+                <div class="mx-auto mb-4 w-fit rounded-full bg-white/80 p-3">
+                  <i data-lucide="map-pin" class="h-6 w-6 text-accent"></i>
+                </div>
+                <h4 class="text-lg font-semibold">Interactive Spot Map</h4>
+                <p class="mt-2 text-sm text-muted-foreground">Discover surf spots with parking, cafes, and surf schools nearby.</p>
+              </div>
+            </article>
+            <article class="relative overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-6 text-center shadow-lg">
+              <div class="absolute inset-0" style="background-image: url('../src/assets/privacy-bg.jpg'); background-size: cover; background-position: center; opacity: 0.25;"></div>
+              <div class="relative">
+                <div class="mx-auto mb-4 w-fit rounded-full bg-white/80 p-3">
+                  <i data-lucide="shield" class="h-6 w-6 text-accent"></i>
+                </div>
+                <h4 class="text-lg font-semibold">Privacy-First Design</h4>
+                <p class="mt-2 text-sm text-muted-foreground">No account required. Your surf data stays on your device.</p>
+              </div>
+            </article>
+            <article class="relative overflow-hidden rounded-3xl border border-white/70 bg-white/80 p-6 text-center shadow-lg">
+              <div class="absolute inset-0" style="background-image: url('../src/assets/lightning-fast-bg.jpg'); background-size: cover; background-position: center; opacity: 0.25;"></div>
+              <div class="relative">
+                <div class="mx-auto mb-4 w-fit rounded-full bg-white/80 p-3">
+                  <i data-lucide="zap" class="h-6 w-6 text-accent"></i>
+                </div>
+                <h4 class="text-lg font-semibold">Just $3.99/Month</h4>
+                <p class="mt-2 text-sm text-muted-foreground">One price, forever. No ads, no hidden fees—no worries.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pro Features -->
+    <section id="pro" class="relative overflow-hidden py-16 sm:py-24">
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/10 to-accent/5"></div>
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6">
+        <div class="mb-14 text-center">
+          <h2 class="mb-4 text-4xl font-heading font-bold">Unlock the Ultimate Surf Experience</h2>
+          <p class="mx-auto max-w-2xl text-lg text-muted-foreground">Get professional-grade forecasting tools trusted by thousands of surfers worldwide.</p>
+        </div>
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <article class="rounded-2xl border border-primary/20 bg-white/70 p-6 shadow-lg">
+            <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <i data-lucide="brain" class="h-6 w-6 text-accent"></i>
+            </div>
+            <h3 class="text-lg font-semibold">AI POWERED</h3>
+            <p class="mt-2 text-sm text-muted-foreground">Advanced machine learning predicts wave quality with 95% accuracy.</p>
+          </article>
+          <article class="rounded-2xl border border-primary/20 bg-white/70 p-6 shadow-lg">
+            <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <i data-lucide="trending-up" class="h-6 w-6 text-accent"></i>
+            </div>
+            <h3 class="text-lg font-semibold">14-Day Extended Forecast</h3>
+            <p class="mt-2 text-sm text-muted-foreground">Plan surf trips with confidence using our extended predictions.</p>
+          </article>
+          <article class="rounded-2xl border border-primary/20 bg-white/70 p-6 shadow-lg">
+            <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <i data-lucide="shopping-bag" class="h-6 w-6 text-accent"></i>
+            </div>
+            <h3 class="text-lg font-semibold">Smart Gear Suggestions</h3>
+            <p class="mt-2 text-sm text-muted-foreground">Recommendations based on sea, weather, and location conditions.</p>
+          </article>
+          <article class="rounded-2xl border border-primary/20 bg-white/70 p-6 shadow-lg">
+            <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <i data-lucide="store" class="h-6 w-6 text-accent"></i>
+            </div>
+            <h3 class="text-lg font-semibold">Nearby Cafés & Surf Schools</h3>
+            <p class="mt-2 text-sm text-muted-foreground">Grab a bite, rent a board, and meet local instructors.</p>
+          </article>
+          <article class="rounded-2xl border border-primary/20 bg-white/70 p-6 shadow-lg">
+            <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <i data-lucide="waves" class="h-6 w-6 text-accent"></i>
+            </div>
+            <h3 class="text-lg font-semibold">Real-Time Swell & Tide</h3>
+            <p class="mt-2 text-sm text-muted-foreground">Live tracking of direction, period, and height from global buoys.</p>
+          </article>
+          <article class="rounded-2xl border border-primary/20 bg-white/70 p-6 shadow-lg">
+            <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <i data-lucide="wind" class="h-6 w-6 text-accent"></i>
+            </div>
+            <h3 class="text-lg font-semibold">Wind & Weather Layers</h3>
+            <p class="mt-2 text-sm text-muted-foreground">Detailed wind patterns and weather forecasts.</p>
+          </article>
+          <article class="rounded-2xl border border-primary/20 bg-white/70 p-6 shadow-lg">
+            <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <i data-lucide="map-pin" class="h-6 w-6 text-accent"></i>
+            </div>
+            <h3 class="text-lg font-semibold">1000+ Secret Spots</h3>
+            <p class="mt-2 text-sm text-muted-foreground">Access exclusive breaks and hidden gems from locals.</p>
+          </article>
+          <article class="rounded-2xl border border-primary/20 bg-white/70 p-6 shadow-lg">
+            <div class="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <i data-lucide="zap" class="h-6 w-6 text-accent"></i>
+            </div>
+            <h3 class="text-lg font-semibold">Lightning-Fast Updates</h3>
+            <p class="mt-2 text-sm text-muted-foreground">Condition updates every 15 minutes, not hours.</p>
+          </article>
+        </div>
+
+        <div id="pricing" class="mt-16">
+          <div class="mx-auto max-w-2xl rounded-3xl border border-primary/40 bg-gradient-to-br from-primary via-primary to-accent p-1 shadow-2xl">
+            <div class="rounded-[22px] bg-primary/10 p-8 text-center text-primary-foreground">
+              <div class="grid gap-6 sm:grid-cols-2">
+                <div class="rounded-2xl border border-white/20 bg-white/10 p-6">
+                  <div class="flex items-baseline justify-center gap-2">
+                    <span class="text-5xl font-bold">$3.99</span>
+                    <span class="text-lg text-white/80">/month</span>
+                  </div>
+                  <p class="mt-2 text-sm text-white/80">Billed monthly</p>
+                </div>
+                <div class="rounded-2xl border border-white/20 bg-white/10 p-6">
+                  <div class="flex items-baseline justify-center gap-2">
+                    <span class="text-5xl font-bold">$19.99</span>
+                    <span class="text-lg text-white/80">/year</span>
+                  </div>
+                  <p class="mt-2 text-sm text-white/80">Save over 50%</p>
+                </div>
+              </div>
+              <p class="mt-6 text-lg text-white/90">Unlimited access to all Pro features</p>
+              <ul class="mx-auto mt-6 max-w-md space-y-3 text-left text-white/90">
+                <li class="flex items-center gap-3">
+                  <i data-lucide="check" class="h-5 w-5 text-accent"></i>
+                  7-day free trial included
+                </li>
+                <li class="flex items-center gap-3">
+                  <i data-lucide="check" class="h-5 w-5 text-accent"></i>
+                  Cancel anytime, no commitment
+                </li>
+                <li class="flex items-center gap-3">
+                  <i data-lucide="check" class="h-5 w-5 text-accent"></i>
+                  Priority customer support
+                </li>
+                <li class="flex items-center gap-3">
+                  <i data-lucide="check" class="h-5 w-5 text-accent"></i>
+                  Early access to new features
+                </li>
+              </ul>
+              <div id="download" class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                <a href="#" class="block transition hover:scale-105">
+                  <img src="../src/assets/app-store-badge.svg" alt="Download on the App Store" class="h-14 w-auto" />
+                </a>
+                <a href="#" class="inline-flex min-w-[200px] items-center justify-center rounded-full border border-primary bg-white px-8 py-3 text-lg font-semibold text-primary transition hover:bg-white/90">
+                  Start Free Trial
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Support -->
+    <section id="support" class="bg-background py-16 sm:py-20">
+      <div class="mx-auto max-w-3xl px-4 sm:px-6">
+        <h2 class="text-4xl font-heading font-bold">Get in Touch</h2>
+        <p class="mt-4 text-lg text-muted-foreground">Have questions, feedback, or suggestions? We'd love to hear from the surf community.</p>
+        <div class="mt-10 space-y-8">
+          <article class="rounded-3xl border border-accent/20 bg-accent/5 p-8 shadow">
+            <div class="mb-6 flex items-center space-x-3">
+              <div class="rounded-full bg-accent/10 p-3 text-accent">
+                <i data-lucide="message-circle" class="h-6 w-6 text-accent"></i>
+              </div>
+              <h3 class="text-2xl font-semibold text-accent">Support</h3>
+            </div>
+            <p class="text-muted-foreground">Questions, feedback or suggestions? Reach out directly to our team.</p>
+            <div class="mt-6 space-y-3">
+              <button
+                id="copy-email"
+                class="flex w-full items-center justify-center gap-2 rounded-full border border-accent/30 px-5 py-3 text-center text-accent transition hover:border-accent"
+              >
+                <i data-lucide="mail" class="h-4 w-4 text-accent"></i>
+                help@surfit.app
+              </button>
+              <a
+                href="https://wa.me/34623944378"
+                target="_blank"
+                rel="noreferrer"
+                class="flex w-full items-center justify-center gap-2 rounded-full border border-accent/30 px-5 py-3 text-center text-accent transition hover:border-accent"
+              >
+                <svg aria-hidden="true" viewBox="0 0 32 32" class="h-4 w-4" fill="none">
+                  <path fill="#25D366" fill-rule="evenodd" clip-rule="evenodd" d="M16.013 0C7.177 0 0 7.178 0 16.013c0 2.819.742 5.567 2.152 8.01L0 32l8.247-2.138a15.988 15.988 0 007.765 2.103C24.85 31.975 32 24.797 32 15.987 32 7.178 24.85 0 16.013 0zm9.4 23.256c-.399 1.131-2.304 2.071-3.212 2.212-.834.13-1.902.186-3.063-.119-7.048-1.542-12.46-8.094-12.855-8.489-.396-.396-3.06-4.086-3.06-7.797 0-3.71 1.937-5.505 2.625-6.248.688-.743 1.51-.93 2.014-.93.505 0 .999.005 1.44.026.464.019 1.088-.175 1.7 1.301.684 1.706 1.723 4.826 1.823 5.178.1.352.164.762.03 1.107-.13.352-.2.568-.396.874-.198.308-.414.713-.59.957-.197.274-.402.57-.173 1.117.228.547 1.012 1.902 2.175 3.068 1.49 1.488 2.742 1.951 3.289 2.177.547.226.872.197 1.197-.119.323-.316 1.385-1.615 1.76-2.17.375-.557.766-.462 1.29-.28.525.184 3.315 1.563 3.88 1.843.566.278.944.417 1.081.653.137.237.137 1.368-.262 2.5z" />
+                </svg>
+                WhatsApp
+              </a>
+            </div>
+            <p id="copy-success" class="mt-3 hidden text-center text-sm text-emerald-600">Email copied to clipboard</p>
+          </article>
+          <div class="rounded-3xl border border-primary/20 bg-primary/5 p-6 text-sm text-muted-foreground">
+            <h3 class="mb-3 text-lg font-semibold text-foreground">Privacy Promise</h3>
+            SurfIt is designed with privacy at its core. No user accounts, no tracking, no data collection. Your surf spots and preferences stay on your device.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-border bg-muted/20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-16">
+        <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
+          <div class="lg:col-span-2">
+            <div class="mb-6 flex items-center space-x-3">
+              <img src="../src/assets/surfit-app-icon.png" alt="SurfIt icon" class="h-10 w-10 rounded-xl" />
+              <span class="text-2xl font-heading font-semibold">SurfIt</span>
+            </div>
+            <p class="mb-4 max-w-md text-sm text-muted-foreground">
+              Find better days to surf. SurfIt blends swell, wind and tide into one fast, privacy-friendly map—no accounts, just better sessions.
+            </p>
+            <div class="flex items-center space-x-4">
+              
+              <a href="mailto:help@surfit.app" class="text-sm text-muted-foreground transition hover:text-primary">help@surfit.app</a>
+            </div>
+          </div>
+          <div>
+            <h4 class="mb-4 font-semibold">Product</h4>
+            <ul class="space-y-2 text-sm text-muted-foreground">
+              <li><a class="hover:text-primary" href="#features">Features</a></li>
+              <li><a class="hover:text-primary" href="#download">Download</a></li>
+              <li><a class="hover:text-primary" href="#pricing">Pricing</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="mb-4 font-semibold">Support</h4>
+            <ul class="space-y-2 text-sm text-muted-foreground">
+              <li><a class="hover:text-primary" href="#support">Contact</a></li>
+              <li><a class="hover:text-primary" href="privacy.html">Privacy Policy</a></li>
+              <li><a class="hover:text-primary" href="terms.html">Terms</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="mb-4 font-semibold">Community</h4>
+            <ul class="space-y-2 text-sm text-muted-foreground">
+              <li>
+                <a class="inline-flex items-center gap-2 hover:text-primary" href="https://wa.me/34623944378">
+                  <svg aria-hidden="true" viewBox="0 0 32 32" class="h-4 w-4" fill="none">
+                    <path fill="#25D366" fill-rule="evenodd" clip-rule="evenodd" d="M16.013 0C7.177 0 0 7.178 0 16.013c0 2.819.742 5.567 2.152 8.01L0 32l8.247-2.138a15.988 15.988 0 007.765 2.103C24.85 31.975 32 24.797 32 15.987 32 7.178 24.85 0 16.013 0zm9.4 23.256c-.399 1.131-2.304 2.071-3.212 2.212-.834.13-1.902.186-3.063-.119-7.048-1.542-12.46-8.094-12.855-8.489-.396-.396-3.06-4.086-3.06-7.797 0-3.71 1.937-5.505 2.625-6.248.688-.743 1.51-.93 2.014-.93.505 0 .999.005 1.44.026.464.019 1.088-.175 1.7 1.301.684 1.706 1.723 4.826 1.823 5.178.1.352.164.762.03 1.107-.13.352-.2.568-.396.874-.198.308-.414.713-.59.957-.197.274-.402.57-.173 1.117.228.547 1.012 1.902 2.175 3.068 1.49 1.488 2.742 1.951 3.289 2.177.547.226.872.197 1.197-.119.323-.316 1.385-1.615 1.76-2.17.375-.557.766-.462 1.29-.28.525.184 3.315 1.563 3.88 1.843.566.278.944.417 1.081.653.137.237.137 1.368-.262 2.5z" />
+                  </svg>
+                  WhatsApp
+                </a>
+              </li>
+              <li><a class="hover:text-primary" href="#support">Feedback</a></li>
+              <li><a class="hover:text-primary" href="#support">Bugs</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-12 border-t border-border pt-8 text-sm text-muted-foreground">
+          <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <p>© <span id="year"></span> Surfit.app by NoPressureLab. Open sources surf forecasting.</p>
+            <div class="flex flex-wrap items-center gap-5">
+              <div class="flex items-center">
+                <i data-lucide="shield" class="mr-2 h-4 w-4 text-accent"></i>
+                Privacy-first design
+              </div>
+              <p class="flex items-center">
+                Made with
+                <i data-lucide="heart" class="mx-1 h-4 w-4 text-accent"></i>
+                for surfers
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const toggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        const closeIcon = document.getElementById('close-icon');
+        toggle?.addEventListener('click', () => {
+          mobileMenu?.classList.toggle('hidden');
+          menuIcon?.classList.toggle('hidden');
+          closeIcon?.classList.toggle('hidden');
+        });
+
+        document.querySelectorAll('#mobile-menu a').forEach((link) => {
+          link.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+            menuIcon?.classList.remove('hidden');
+            closeIcon?.classList.add('hidden');
+          });
+        });
+
+        const copyBtn = document.getElementById('copy-email');
+        const success = document.getElementById('copy-success');
+        copyBtn?.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText('help@surfit.app');
+            success?.classList.remove('hidden');
+            setTimeout(() => success?.classList.add('hidden'), 2500);
+          } catch (err) {
+            alert('Copy not supported in this browser');
+          }
+        });
+
+        const year = document.getElementById('year');
+        if (year) year.textContent = new Date().getFullYear();
+
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,39 +1,172 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>SurfIt — Privacy Policy</title>
+    <meta name="description" content="SurfIt privacy policy" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              background: '#F7FAFC',
+              foreground: '#1A1C2C',
+              card: '#DCE3E9',
+              border: '#DCE3E9',
+              primary: '#00A6A6',
+              accent: '#00D2FF',
+              muted: '#E2E8F0',
+              'muted-foreground': '#4B5563'
+            },
+            fontFamily: {
+              heading: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'system-ui', 'sans-serif'],
+              body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'system-ui', 'sans-serif']
+            },
+            boxShadow: {
+              ocean: '0 10px 30px rgba(15, 118, 110, 0.2)'
+            }
+          }
+        }
+      };
+    </script>
     <style>
-      /* Brand palette (consistent with homepage) */
-      :root {
-        --bg:#F7FAFC;      /* Soft White */
-        --fg:#1A1C2C;      /* Midnight Navy */
-        --muted:#6B7280;   /* Muted body */
-        --accent:#00A6A6;  /* Surf Teal */
-        --heading:#005D8F; /* Ocean Blue */
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        background-color: #F7FAFC;
+        color: #1A1C2C;
       }
-      html,body { height:100%; margin:0; font:16px/1.5 -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--fg); }
-      .wrap { max-width:860px; margin:0 auto; padding:48px 20px; }
-      a, a:visited { color:var(--accent); }
-      a:hover { color:var(--accent2); text-decoration: underline; }
-      a:active { color:var(--grad-start); }
-      h1, h2, h3 { margin-top:0; color: var(--heading); }
-      p, li { color:#4A4A4A; }
+
+      html {
+        scroll-behavior: smooth;
+      }
     </style>
   </head>
-  <body>
-    <main class="wrap">
-      <h1>Privacy Policy</h1>
-      <p>SurfIt does not sell personal data. The app requests location access to show nearby conditions; location data stays on-device except when used to request aggregated weather/marine data from our providers.</p>
-      <p>We use the following providers:
-        <ul>
-          <li>Open‑Meteo for weather and marine forecasts</li>
-          <li>MapTiler &amp; OpenStreetMap contributors for maps</li>
-        </ul>
-      </p>
-      <p>Contact: <a href="mailto:help@surfit.app">help@surfit.app</a></p>
-      <p><a href="/">Back to home</a></p>
+  <body class="min-h-screen bg-background text-foreground antialiased">
+    <header class="border-b border-border bg-white/80 backdrop-blur">
+      <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+        <a href="static.html" class="flex items-center space-x-3">
+          <img src="../src/assets/surfit-app-logo.png" alt="SurfIt logo" class="h-9 w-9 rounded-xl shadow" />
+          <span class="text-2xl font-semibold">SurfIt</span>
+        </a>
+        <a href="static.html" class="rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:bg-white">
+          ← Back to site
+        </a>
+      </div>
+    </header>
+
+    <main class="px-6 py-16">
+      <div class="mx-auto max-w-3xl rounded-3xl border border-border bg-white/80 p-8 shadow-lg">
+        <p class="text-sm uppercase tracking-widest text-accent">Last updated: 19th November 2025</p>
+        <h1 class="mt-3 text-4xl font-heading font-bold">Surfit – Privacy Policy</h1>
+        <p class="mt-6 text-lg text-muted-foreground">
+          Surfit (“we,” “us,” or “our”) provides surf-condition information to users without requiring an account. This Privacy Policy explains how we collect, use, and protect information when you use the Surfit iOS app (the “App”).
+        </p>
+
+        <section class="mt-10 space-y-4">
+          <h2 class="text-2xl font-semibold">1. No Account Required</h2>
+          <p>
+            Surfit does not require you to create an account or provide any personal login information. You can use the App in full without signing up. Surfit operates entirely on your device. The app does not collect, store, or transmit any personally identifiable information. All processing occurs locally, and no user data is retained on our servers or shared with third parties.
+          </p>
+          <p>
+            The only information used is your device’s location, which remains on-device and is used solely to display nearby surf conditions. Location data is never stored or linked to you in any way.
+          </p>
+        </section>
+
+        <section class="mt-10 space-y-4">
+          <h2 class="text-2xl font-semibold">2. Information We Collect</h2>
+          <h3 class="text-xl font-semibold">2.1 Information You Provide</h3>
+          <p>
+            Because the App does not use accounts, we do not collect personal information such as your name, email, phone number, or address.
+          </p>
+          <h3 class="text-xl font-semibold">2.2 Automatically Collected Information</h3>
+          <p>To ensure the App functions properly and to improve user experience, the App may automatically collect certain non-personal data, such as:</p>
+          <ul class="list-disc space-y-2 pl-6 text-muted-foreground">
+            <li>Device information (device model, OS version)</li>
+            <li>App usage information (features used, performance data)</li>
+            <li>Crash logs and diagnostics (to improve stability)</li>
+          </ul>
+          <p>This information does not identify you personally.</p>
+          <h3 class="text-xl font-semibold">2.3 Location Information</h3>
+          <p>
+            Surfit may request access to your approximate or precise location to show surf conditions relevant to your area. Your location data is used only to display surf conditions and is not stored or shared by us. You may disable location access at any time in iOS settings.
+          </p>
+        </section>
+
+        <section class="mt-10 space-y-4">
+          <h2 class="text-2xl font-semibold">3. Third-Party Services</h2>
+          <p>We may use trusted third-party tools or APIs to provide surf condition data, analytics, or crash reporting. These may include:</p>
+          <ul class="list-disc space-y-2 pl-6 text-muted-foreground">
+            <li>Weather and ocean-condition data providers</li>
+            <li>Analytics services (e.g., Apple Analytics or similar)</li>
+            <li>Crash reporting (e.g., Apple or other diagnostics tools)</li>
+          </ul>
+          <p>These services may collect non-personal device or usage information as governed by their own privacy policies. We do not sell, rent, or trade your personal information to anyone.</p>
+        </section>
+
+        <section class="mt-10 space-y-4">
+          <h2 class="text-2xl font-semibold">4. How We Use Information</h2>
+          <p>Any collected information is used solely for:</p>
+          <ul class="list-disc space-y-2 pl-6 text-muted-foreground">
+            <li>Providing surf condition data</li>
+            <li>Improving App performance and stability</li>
+            <li>Understanding how users interact with the App to enhance features and usability</li>
+          </ul>
+        </section>
+
+        <section class="mt-10 space-y-4">
+          <h2 class="text-2xl font-semibold">5. Data Storage</h2>
+          <p>
+            Surfit does not store personal information on our servers. Any temporary data (such as location requests or surf-condition queries) is handled in real time and not retained.
+          </p>
+        </section>
+
+        <section class="mt-10 space-y-4">
+          <h2 class="text-2xl font-semibold">6. Children’s Privacy</h2>
+          <p>
+            Surfit is not intended for children under the age of 4. We do not knowingly collect personal information from children. If you believe a child has provided information, please contact us so we can delete it.
+          </p>
+        </section>
+
+        <section class="mt-10 space-y-4">
+          <h2 class="text-2xl font-semibold">7. Your Choices</h2>
+          <p>You can control and manage the following:</p>
+          <ul class="list-disc space-y-2 pl-6 text-muted-foreground">
+            <li>Location permissions: Enable or disable at any time through iOS Settings.</li>
+            <li>Analytics and diagnostics: Depending on your Apple device settings, you may choose whether to share analytics data.</li>
+          </ul>
+        </section>
+
+        <section class="mt-10 space-y-4">
+          <h2 class="text-2xl font-semibold">8. Security</h2>
+          <p>
+            We take reasonable measures to protect any non-personal information processed by the App. However, no digital system is completely secure, and we cannot guarantee absolute protection.
+          </p>
+        </section>
+
+        <section class="mt-10 space-y-4">
+          <h2 class="text-2xl font-semibold">9. Changes to This Privacy Policy</h2>
+          <p>
+            We may update this Privacy Policy from time to time. When we do, we will update the “Last updated” date at the top. Continued use of the App after changes indicates acceptance of the revised policy.
+          </p>
+        </section>
+
+        <section class="mt-10 space-y-4">
+          <h2 class="text-2xl font-semibold">10. Contact Us</h2>
+          <p>If you have questions or concerns about this Privacy Policy, please contact us at:</p>
+          <ul class="list-disc space-y-2 pl-6 text-muted-foreground">
+            <li>Email: <a href="mailto:help@surfit.app" class="text-primary underline">help@surfit.app</a></li>
+            <li>Website: <a href="https://surfit.app" class="text-primary underline">surfit.app</a></li>
+          </ul>
+        </section>
+      </div>
     </main>
   </body>
-  </html>
+</html>
